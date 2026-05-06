@@ -183,7 +183,7 @@ class AppTheme {
       ),
       hintStyle: AppTextStyles.body(),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.darkCard,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -243,7 +243,7 @@ class AppTheme {
       ),
       iconTheme: IconThemeData(color: AppColors.textPrimaryLight),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.lightCard,
       elevation: 0,
       shadowColor: Colors.black.withOpacity(0.06),
