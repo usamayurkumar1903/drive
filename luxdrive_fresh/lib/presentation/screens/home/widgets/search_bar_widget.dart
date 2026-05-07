@@ -41,7 +41,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget> {
                 boxShadow: [
                   BoxShadow(
                     color: _focusNode.hasFocus
-                        ? AppColors.gold.withOpacity(0.2)
+                        ? AppColors.accent.withOpacity(0.2)
                         : Colors.black.withOpacity(isDark ? 0.25 : 0.06),
                     blurRadius: _focusNode.hasFocus ? 16 : 10,
                     offset: const Offset(0, 4),
@@ -49,7 +49,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget> {
                 ],
                 border: Border.all(
                   color: _focusNode.hasFocus
-                      ? AppColors.gold.withOpacity(0.5)
+                      ? AppColors.accent.withOpacity(0.5)
                       : Colors.transparent,
                   width: 1.5,
                 ),

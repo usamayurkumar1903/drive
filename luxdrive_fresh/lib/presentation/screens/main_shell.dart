@@ -24,16 +24,10 @@ class MainShell extends ConsumerWidget {
     ];
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: isDark
-          ? SystemUiOverlayStyle.light
-          : SystemUiOverlayStyle.dark,
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor:
-            isDark ? AppColors.darkBg : AppColors.lightBg,
-        body: IndexedStack(
-          index: navIndex,
-          children: screens,
-        ),
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+        body: IndexedStack(index: navIndex, children: screens),
         bottomNavigationBar: _LuxBottomNav(
           currentIndex: navIndex,
           isDark: isDark,
@@ -61,18 +55,9 @@ class _LuxBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NavItem(
-          icon: Icons.home_rounded,
-          activeIcon: Icons.home_rounded,
-          label: 'Explore'),
-      _NavItem(
-          icon: Icons.favorite_border_rounded,
-          activeIcon: Icons.favorite_rounded,
-          label: 'Saved'),
-      _NavItem(
-          icon: Icons.person_outline_rounded,
-          activeIcon: Icons.person_rounded,
-          label: 'Profile'),
+      _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Explore'),
+      _NavItem(icon: Icons.favorite_border_rounded, activeIcon: Icons.favorite_rounded, label: 'Saved'),
+      _NavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile'),
     ];
 
     return Container(
@@ -80,15 +65,15 @@ class _LuxBottomNav extends StatelessWidget {
         color: isDark ? AppColors.darkSurface : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.5 : 0.08),
-            blurRadius: 30,
-            offset: const Offset(0, -8),
+            color: Colors.black.withOpacity(isDark ? 0.4 : 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -6),
           ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Row(
             children: items.asMap().entries.map((e) {
               final i = e.key;
@@ -99,14 +84,14 @@ class _LuxBottomNav extends StatelessWidget {
                   onTap: () => onTap(i),
                   behavior: HitTestBehavior.opaque,
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
+                    duration: const Duration(milliseconds: 220),
                     curve: Curves.easeInOut,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                        horizontal: 10, vertical: 8),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                       color: isActive
-                          ? AppColors.gold.withOpacity(0.12)
+                          ? AppColors.accent.withOpacity(0.1)
                           : Colors.transparent,
                     ),
                     child: Column(
@@ -120,14 +105,14 @@ class _LuxBottomNav extends StatelessWidget {
                             isActive ? item.activeIcon : item.icon,
                             key: ValueKey(isActive),
                             color: isActive
-                                ? AppColors.gold
+                                ? AppColors.accent
                                 : isDark
                                     ? AppColors.textTertiaryDark
                                     : Colors.black38,
-                            size: 24,
+                            size: 22,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         AnimatedDefaultTextStyle(
                           duration: const Duration(milliseconds: 200),
                           style: TextStyle(
@@ -137,7 +122,7 @@ class _LuxBottomNav extends StatelessWidget {
                                 ? FontWeight.w700
                                 : FontWeight.w500,
                             color: isActive
-                                ? AppColors.gold
+                                ? AppColors.accent
                                 : isDark
                                     ? AppColors.textTertiaryDark
                                     : Colors.black38,
@@ -161,10 +146,6 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
-
-  const _NavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-  });
+  const _NavItem(
+      {required this.icon, required this.activeIcon, required this.label});
 }

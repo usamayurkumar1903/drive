@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/car_model.dart';
@@ -221,7 +220,7 @@ class _ImageCarousel extends StatelessWidget {
                   height: 6,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(3),
-                    color: currentPage == i ? AppColors.gold : Colors.white38,
+                    color: currentPage == i ? AppColors.accent : Colors.white38,
                   ),
                 ),
               ),
@@ -313,7 +312,7 @@ class _DetailContent extends StatelessWidget {
               Text(
                 car.brand.toUpperCase(),
                 style: AppTextStyles.label(dark: isDark)
-                    .copyWith(color: AppColors.gold, fontSize: 11, letterSpacing: 2),
+                    .copyWith(color: AppColors.accent, fontSize: 11, letterSpacing: 2),
               ),
               const SizedBox(width: 8),
               Container(
@@ -370,7 +369,7 @@ class _DetailContent extends StatelessWidget {
                 children: [
                   Text(
                     Formatters.formatPriceFull(car.price),
-                    style: AppTextStyles.price().copyWith(fontSize: 22),
+                    style: AppTextStyles.price(dark: isDark).copyWith(fontSize: 22),
                   ),
                   Text(
                     'MSRP',
@@ -444,7 +443,7 @@ class _RatingRow extends StatelessWidget {
                   : filled
                       ? Icons.star_rounded
                       : Icons.star_outline_rounded,
-              color: AppColors.gold,
+              color: AppColors.accent,
               size: 16,
             ),
           );
@@ -508,7 +507,7 @@ class _QuickSpecs extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Icon(s.$3, color: AppColors.gold, size: 20),
+                Icon(s.$3, color: AppColors.accent, size: 20),
                 const SizedBox(height: 6),
                 Text(
                   s.$2,
@@ -557,7 +556,7 @@ class _ColorsSectionState extends State<_ColorsSection> {
           children: [
             Text('AVAILABLE COLORS',
                 style: AppTextStyles.label(dark: widget.isDark)
-                    .copyWith(color: AppColors.gold, fontSize: 10)),
+                    .copyWith(color: AppColors.accent, fontSize: 10)),
             const Spacer(),
             Text(
               '${widget.car.colors.length} options',
@@ -586,7 +585,7 @@ class _ColorsSectionState extends State<_ColorsSection> {
                   color: color,
                   border: Border.all(
                     color: isSelected
-                        ? AppColors.gold
+                        ? AppColors.accent
                         : Colors.transparent,
                     width: 2.5,
                   ),
@@ -630,7 +629,7 @@ class _Section extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                    colors: AppColors.goldGradient,
+                    colors: AppColors.accentGradient,
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter),
                 borderRadius: BorderRadius.circular(2),
@@ -783,20 +782,20 @@ class _BottomCta extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                        color: AppColors.gold.withOpacity(0.5), width: 1.5),
-                    color: AppColors.gold.withOpacity(0.08),
+                        color: AppColors.accent.withOpacity(0.5), width: 1.5),
+                    color: AppColors.accent.withOpacity(0.08),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(Icons.directions_car_rounded,
-                          color: AppColors.gold, size: 18),
+                          color: AppColors.accent, size: 18),
                       const SizedBox(width: 8),
                       Text(
                         'Test Drive',
                         style: TextStyle(
                           fontFamily: 'Urbanist',
-                          color: AppColors.gold,
+                          color: AppColors.accent,
                           fontWeight: FontWeight.w700,
                           fontSize: 15,
                         ),
@@ -818,13 +817,13 @@ class _BottomCta extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     gradient: const LinearGradient(
-                      colors: AppColors.goldGradient,
+                      colors: AppColors.accentGradient,
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.gold.withOpacity(0.4),
+                        color: AppColors.accent.withOpacity(0.4),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -908,7 +907,7 @@ class _BookingSheet extends StatelessWidget {
           Row(
             children: [
               const Icon(Icons.event_available_rounded,
-                  color: AppColors.gold, size: 24),
+                  color: AppColors.accent, size: 24),
               const SizedBox(width: 12),
               Text('Book a Test Drive',
                   style: AppTextStyles.h3(dark: isDark)),
@@ -990,7 +989,7 @@ class _PurchaseSheet extends StatelessWidget {
           Row(
             children: [
               const Icon(Icons.verified_rounded,
-                  color: AppColors.gold, size: 24),
+                  color: AppColors.accent, size: 24),
               const SizedBox(width: 12),
               Text('Purchase Summary', style: AppTextStyles.h3(dark: isDark)),
             ],
@@ -1019,7 +1018,7 @@ class _PurchaseSheet extends StatelessWidget {
             value: Formatters.formatPriceFull(car.price + 1500),
             isDark: isDark,
             isBold: true,
-            valueColor: AppColors.gold,
+            valueColor: AppColors.accent,
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -1128,9 +1127,9 @@ class _InfoTile extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.gold.withOpacity(0.12),
+              color: AppColors.accent.withOpacity(0.12),
             ),
-            child: Icon(icon, color: AppColors.gold, size: 18),
+            child: Icon(icon, color: AppColors.accent, size: 18),
           ),
           const SizedBox(width: 14),
           Column(

@@ -234,7 +234,7 @@ class _SectionHeader extends StatelessWidget {
           Text(
             subtitle.toUpperCase(),
             style: AppTextStyles.label(dark: isDark)
-                .copyWith(color: AppColors.gold, fontSize: 10),
+                .copyWith(color: AppColors.accent, fontSize: 10),
           ),
           const SizedBox(height: 4),
           Text(title, style: AppTextStyles.h2(dark: isDark)),

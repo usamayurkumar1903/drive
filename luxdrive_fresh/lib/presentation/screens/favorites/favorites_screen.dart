@@ -32,7 +32,7 @@ class FavoritesScreen extends ConsumerWidget {
                   Text(
                     'SAVED',
                     style: AppTextStyles.label(dark: isDark)
-                        .copyWith(color: AppColors.gold, fontSize: 11, letterSpacing: 2),
+                        .copyWith(color: AppColors.accent, fontSize: 11, letterSpacing: 2),
                   ),
                   const SizedBox(height: 4),
                   Row(

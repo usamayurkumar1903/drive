@@ -7,6 +7,9 @@ import '../../../core/utils/formatters.dart';
 import '../../../data/models/car_model.dart';
 import '../../../data/providers/car_provider.dart';
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Grid Card
+// ──────────────────────────────────────────────────────────────────────────────
 class CarGridCard extends ConsumerStatefulWidget {
   final CarModel car;
   final VoidCallback onTap;
@@ -25,24 +28,21 @@ class CarGridCard extends ConsumerStatefulWidget {
 
 class _CarGridCardState extends ConsumerState<CarGridCard>
     with SingleTickerProviderStateMixin {
-  late AnimationController _pressController;
+  late AnimationController _pressCtrl;
   late Animation<double> _scaleAnim;
 
   @override
   void initState() {
     super.initState();
-    _pressController = AnimationController(
-      duration: const Duration(milliseconds: 120),
-      vsync: this,
-    );
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _pressController, curve: Curves.easeOut),
-    );
+    _pressCtrl = AnimationController(
+        duration: const Duration(milliseconds: 100), vsync: this);
+    _scaleAnim = Tween<double>(begin: 1.0, end: 0.96).animate(
+        CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut));
   }
 
   @override
   void dispose() {
-    _pressController.dispose();
+    _pressCtrl.dispose();
     super.dispose();
   }
 
@@ -54,32 +54,24 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
     return ScaleTransition(
       scale: _scaleAnim,
       child: GestureDetector(
-        onTapDown: (_) => _pressController.forward(),
-        onTapUp: (_) => _pressController.reverse(),
-        onTapCancel: () => _pressController.reverse(),
+        onTapDown: (_) => _pressCtrl.forward(),
+        onTapUp: (_) => _pressCtrl.reverse(),
+        onTapCancel: () => _pressCtrl.reverse(),
         onTap: widget.onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isDark
-                  ? [AppColors.darkCard, AppColors.darkCardElevated]
-                  : [Colors.white, const Color(0xFFF8F8FC)],
-            ),
+            borderRadius: BorderRadius.circular(18),
+            color: isDark ? AppColors.darkCard : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: isDark
-                    ? Colors.black.withOpacity(0.4)
-                    : Colors.black.withOpacity(0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -88,7 +80,6 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
                   flex: 3,
                   child: Stack(
                     children: [
-                      // Car image
                       Hero(
                         tag: 'car_image_${widget.car.id}',
                         child: Container(
@@ -99,71 +90,64 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
                           child: Image.asset(
                             widget.car.imagePath,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _PlaceholderImage(
-                              brand: widget.car.brand,
-                              isDark: isDark,
-                            ),
+                            errorBuilder: (_, __, ___) =>
+                                _PlaceholderImage(brand: widget.car.brand, isDark: isDark),
                           ),
                         ),
                       ),
-
                       // Gradient overlay
                       Positioned(
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: 60,
+                        height: 50,
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
                               colors: [
-                                isDark
-                                    ? AppColors.darkCard.withOpacity(0.8)
-                                    : Colors.white.withOpacity(0.6),
+                                (isDark ? AppColors.darkCard : Colors.white)
+                                    .withOpacity(0.7),
                                 Colors.transparent,
                               ],
                             ),
                           ),
                         ),
                       ),
-
                       // NEW badge
                       if (widget.car.isNew)
                         Positioned(
-                          top: 12,
-                          left: 12,
+                          top: 10,
+                          left: 10,
                           child: _Badge(label: 'NEW', color: AppColors.success),
                         ),
-
-                      // Fuel type badge
+                      // Fuel badge - top right, no overlap with heart
                       Positioned(
-                        top: 12,
+                        top: 10,
                         right: 44,
                         child: _FuelBadge(fuelType: widget.car.specs.fuelType),
                       ),
-
-                      // Favorite button
+                      // Favorite button - top right corner
                       Positioned(
-                        top: 8,
-                        right: 8,
+                        top: 6,
+                        right: 6,
                         child: _FavoriteButton(
                           isFavorite: isFav,
                           onTap: () => ref
                               .read(favoritesProvider.notifier)
                               .toggle(widget.car.id),
+                          size: 32,
                         ),
                       ),
                     ],
                   ),
                 ),
-
                 // Info
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,8 +158,9 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
                             Text(
                               widget.car.brand.toUpperCase(),
                               style: AppTextStyles.label(dark: isDark).copyWith(
-                                color: AppColors.gold,
-                                fontSize: 10,
+                                color: AppColors.accent,
+                                fontSize: 9,
+                                letterSpacing: 1.5,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -184,7 +169,7 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
                             Text(
                               widget.car.name,
                               style: AppTextStyles.h3(dark: isDark).copyWith(
-                                fontSize: 14,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
                               maxLines: 2,
@@ -196,24 +181,27 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              Formatters.formatPrice(widget.car.price),
-                              style: AppTextStyles.price().copyWith(
-                                fontSize: 16,
+                            Expanded(
+                              child: Text(
+                                Formatters.formatPrice(widget.car.price),
+                                style: AppTextStyles.bodyMedium(dark: isDark)
+                                    .copyWith(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Row(
                               children: [
-                                Icon(
-                                  Icons.star_rounded,
-                                  color: AppColors.gold,
-                                  size: 12,
-                                ),
+                                const Icon(Icons.star_rounded,
+                                    color: AppColors.warning, size: 11),
                                 const SizedBox(width: 2),
                                 Text(
                                   widget.car.rating.toStringAsFixed(1),
                                   style: AppTextStyles.caption(dark: isDark)
-                                      .copyWith(fontSize: 11),
+                                      .copyWith(fontSize: 10),
                                 ),
                               ],
                             ),
@@ -232,9 +220,9 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
   }
 }
 
-// ──────────────────────────────
-// List card (horizontal)
-// ──────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
+// List Card
+// ──────────────────────────────────────────────────────────────────────────────
 class CarListCard extends ConsumerStatefulWidget {
   final CarModel car;
   final VoidCallback onTap;
@@ -278,46 +266,41 @@ class _CarListCardState extends ConsumerState<CarListCard>
         onTapCancel: () => _ctrl.reverse(),
         onTap: widget.onTap,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             color: isDark ? AppColors.darkCard : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: isDark
-                    ? Colors.black.withOpacity(0.35)
-                    : Colors.black.withOpacity(0.06),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+                color: Colors.black.withOpacity(isDark ? 0.25 : 0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             child: Row(
               children: [
                 // Image
                 Hero(
                   tag: 'car_image_${widget.car.id}',
                   child: SizedBox(
-                    width: 130,
-                    height: 100,
+                    width: 120,
+                    height: 95,
                     child: Image.asset(
                       widget.car.imagePath,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => _PlaceholderImage(
-                        brand: widget.car.brand,
-                        isDark: isDark,
-                      ),
+                          brand: widget.car.brand, isDark: isDark),
                     ),
                   ),
                 ),
-
                 // Info
                 Expanded(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -332,16 +315,15 @@ class _CarListCardState extends ConsumerState<CarListCard>
                                     widget.car.brand.toUpperCase(),
                                     style: AppTextStyles.label(dark: isDark)
                                         .copyWith(
-                                            color: AppColors.gold, fontSize: 10),
+                                            color: AppColors.accent,
+                                            fontSize: 9,
+                                            letterSpacing: 1.5),
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
                                     widget.car.name,
-                                    style:
-                                        AppTextStyles.h3(dark: isDark).copyWith(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                    style: AppTextStyles.h3(dark: isDark)
+                                        .copyWith(fontSize: 14),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -353,11 +335,11 @@ class _CarListCardState extends ConsumerState<CarListCard>
                               onTap: () => ref
                                   .read(favoritesProvider.notifier)
                                   .toggle(widget.car.id),
-                              size: 32,
+                              size: 30,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Row(
                           children: [
                             _SpecChip(
@@ -373,10 +355,12 @@ class _CarListCardState extends ConsumerState<CarListCard>
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Text(
                           Formatters.formatPrice(widget.car.price),
-                          style: AppTextStyles.price().copyWith(fontSize: 17),
+                          style: AppTextStyles.bodyMedium(dark: isDark)
+                              .copyWith(
+                                  fontSize: 15, fontWeight: FontWeight.w800),
                         ),
                       ],
                     ),
@@ -391,9 +375,9 @@ class _CarListCardState extends ConsumerState<CarListCard>
   }
 }
 
-// ──────────────────────────────
-// Featured Card (large horizontal scroll)
-// ──────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
+// Featured Card
+// ──────────────────────────────────────────────────────────────────────────────
 class FeaturedCarCard extends ConsumerWidget {
   final CarModel car;
   final VoidCallback onTap;
@@ -403,41 +387,36 @@ class FeaturedCarCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFav = ref.watch(favoritesProvider).contains(car.id);
-    final isDark = ref.watch(isDarkModeProvider);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 280,
+        width: 260,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              blurRadius: 30,
-              offset: const Offset(0, 12),
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(22),
           child: Stack(
             children: [
-              // Background image
               Hero(
                 tag: 'car_image_${car.id}',
                 child: SizedBox.expand(
                   child: Image.asset(
                     car.imagePath,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _PlaceholderImage(
-                      brand: car.brand,
-                      isDark: true,
-                    ),
+                    errorBuilder: (_, __, ___) =>
+                        _PlaceholderImage(brand: car.brand, isDark: true),
                   ),
                 ),
               ),
-
               // Gradient
               Container(
                 decoration: const BoxDecoration(
@@ -446,71 +425,79 @@ class FeaturedCarCard extends ConsumerWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Color(0x660A0A0F),
-                      Color(0xEE0A0A0F),
+                      Color(0x880F0F0F),
+                      Color(0xEE0F0F0F),
                     ],
                     stops: [0.3, 0.6, 1.0],
                   ),
                 ),
               ),
-
               // Content
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (car.isNew)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.only(bottom: 6),
                           child: _Badge(
-                              label: 'NEW ARRIVAL', color: AppColors.success),
+                              label: 'NEW', color: AppColors.success),
                         ),
                       Text(
                         car.brand.toUpperCase(),
-                        style: AppTextStyles.label().copyWith(
-                          color: AppColors.gold,
-                          fontSize: 11,
-                          letterSpacing: 2.0,
+                        style: const TextStyle(
+                          fontFamily: 'Urbanist',
+                          color: AppColors.accent,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.8,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 3),
                       Text(
                         car.name,
-                        style: AppTextStyles.h2(dark: true),
+                        style: const TextStyle(
+                          fontFamily: 'Urbanist',
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Text(
                             Formatters.formatPrice(car.price),
-                            style: AppTextStyles.price(),
+                            style: const TextStyle(
+                              fontFamily: 'Urbanist',
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                           const Spacer(),
-                          Row(children: [
-                            _MiniSpec(
-                                icon: Icons.speed_rounded,
-                                label: car.specs.acceleration),
-                            const SizedBox(width: 10),
-                            _MiniSpec(
-                                icon: Icons.flash_on_rounded,
-                                label: car.specs.horsepower),
-                          ]),
+                          _MiniSpec(
+                              icon: Icons.speed_rounded,
+                              label: car.specs.acceleration),
+                          const SizedBox(width: 8),
+                          _MiniSpec(
+                              icon: Icons.flash_on_rounded,
+                              label: car.specs.horsepower),
                         ],
                       ),
                     ],
                   ),
                 ),
               ),
-
-              // Favorite btn
+              // Fav button
               Positioned(
-                top: 14,
-                right: 14,
+                top: 12,
+                right: 12,
                 child: _FavoriteButton(
                   isFavorite: isFav,
                   onTap: () =>
@@ -525,9 +512,9 @@ class FeaturedCarCard extends ConsumerWidget {
   }
 }
 
-// ──────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
 // Sub-widgets
-// ──────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
 class _FavoriteButton extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onTap;
@@ -536,7 +523,7 @@ class _FavoriteButton extends StatelessWidget {
   const _FavoriteButton({
     required this.isFavorite,
     required this.onTap,
-    this.size = 36,
+    this.size = 34,
   });
 
   @override
@@ -551,18 +538,18 @@ class _FavoriteButton extends StatelessWidget {
           shape: BoxShape.circle,
           color: isFavorite
               ? AppColors.error.withOpacity(0.15)
-              : Colors.black.withOpacity(0.3),
+              : Colors.black.withOpacity(0.25),
           border: Border.all(
             color: isFavorite
                 ? AppColors.error.withOpacity(0.5)
-                : Colors.white.withOpacity(0.2),
+                : Colors.white.withOpacity(0.25),
             width: 1,
           ),
         ),
         child: Icon(
           isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-          color: isFavorite ? AppColors.error : Colors.white.withOpacity(0.8),
-          size: size * 0.5,
+          color: isFavorite ? AppColors.error : Colors.white.withOpacity(0.85),
+          size: size * 0.48,
         ),
       ),
     );
@@ -572,16 +559,15 @@ class _FavoriteButton extends StatelessWidget {
 class _Badge extends StatelessWidget {
   final String label;
   final Color color;
-
   const _Badge({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
         color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(color: color.withOpacity(0.5), width: 1),
       ),
       child: Text(
@@ -589,9 +575,9 @@ class _Badge extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Urbanist',
           color: color,
-          fontSize: 9,
+          fontSize: 8,
           fontWeight: FontWeight.w800,
-          letterSpacing: 1.5,
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -600,7 +586,6 @@ class _Badge extends StatelessWidget {
 
 class _FuelBadge extends StatelessWidget {
   final String fuelType;
-
   const _FuelBadge({required this.fuelType});
 
   @override
@@ -609,24 +594,23 @@ class _FuelBadge extends StatelessWidget {
     IconData icon;
     switch (fuelType) {
       case 'Electric':
-        color = const Color(0xFF34C759);
+        color = AppColors.success;
         icon = Icons.bolt_rounded;
       case 'Hybrid':
         color = const Color(0xFF30B0C7);
         icon = Icons.eco_rounded;
       default:
-        color = const Color(0xFFFF9F0A);
+        color = AppColors.warning;
         icon = Icons.local_gas_station_rounded;
     }
-
     return Container(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: color.withOpacity(0.15),
         border: Border.all(color: color.withOpacity(0.5), width: 1),
       ),
-      child: Icon(icon, color: color, size: 12),
+      child: Icon(icon, color: color, size: 11),
     );
   }
 }
@@ -635,25 +619,22 @@ class _SpecChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isDark;
-
   const _SpecChip(
       {required this.icon, required this.label, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.darkCardElevated
-            : AppColors.lightBg,
-        borderRadius: BorderRadius.circular(8),
+        color: isDark ? AppColors.darkCardElevated : AppColors.lightBg,
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon,
-              size: 11,
+              size: 10,
               color: isDark
                   ? AppColors.textSecondaryDark
                   : AppColors.textSecondaryLight),
@@ -672,7 +653,6 @@ class _SpecChip extends StatelessWidget {
 class _MiniSpec extends StatelessWidget {
   final IconData icon;
   final String label;
-
   const _MiniSpec({required this.icon, required this.label});
 
   @override
@@ -680,12 +660,16 @@ class _MiniSpec extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 12, color: AppColors.gold),
-        const SizedBox(width: 4),
+        Icon(icon, size: 11, color: AppColors.accent),
+        const SizedBox(width: 3),
         Text(
           label,
-          style: AppTextStyles.caption(dark: true)
-              .copyWith(color: Colors.white70, fontSize: 11),
+          style: const TextStyle(
+            fontFamily: 'Urbanist',
+            color: Colors.white70,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );
@@ -695,7 +679,6 @@ class _MiniSpec extends StatelessWidget {
 class _PlaceholderImage extends StatelessWidget {
   final String brand;
   final bool isDark;
-
   const _PlaceholderImage({required this.brand, required this.isDark});
 
   @override
@@ -708,16 +691,13 @@ class _PlaceholderImage extends StatelessWidget {
           children: [
             Icon(
               Icons.directions_car_filled_rounded,
-              size: 40,
+              size: 36,
               color: isDark
                   ? AppColors.textTertiaryDark
-                  : AppColors.textSecondaryLight.withOpacity(0.4),
+                  : AppColors.textTertiaryLight,
             ),
-            const SizedBox(height: 8),
-            Text(
-              brand,
-              style: AppTextStyles.caption(dark: isDark),
-            ),
+            const SizedBox(height: 6),
+            Text(brand, style: AppTextStyles.caption(dark: isDark)),
           ],
         ),
       ),

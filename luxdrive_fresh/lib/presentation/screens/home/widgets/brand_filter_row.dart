@@ -15,11 +15,11 @@ class BrandFilterRow extends ConsumerWidget {
     final isDark = ref.watch(isDarkModeProvider);
 
     return SizedBox(
-      height: 52,
+      height: 44,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
         itemCount: brands.length + 1,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, i) {
@@ -28,8 +28,7 @@ class BrandFilterRow extends ConsumerWidget {
               label: 'All',
               isSelected: selectedBrand == null,
               isDark: isDark,
-              onTap: () =>
-                  ref.read(filterProvider.notifier).setBrand(null),
+              onTap: () => ref.read(filterProvider.notifier).setBrand(null),
             );
           }
           final brand = brands[i - 1];
@@ -66,36 +65,24 @@ class _BrandChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: AppColors.goldGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
           color: isSelected
-              ? null
+              ? AppColors.accent
               : isDark
                   ? AppColors.darkCard
                   : Colors.white,
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.gold.withOpacity(0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.06),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? AppColors.accent.withOpacity(0.3)
+                  : Colors.black.withOpacity(isDark ? 0.15 : 0.05),
+              blurRadius: isSelected ? 10 : 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Text(
           label,
@@ -104,7 +91,7 @@ class _BrandChip extends StatelessWidget {
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             color: isSelected
-                ? const Color(0xFF0A0A0F)
+                ? Colors.white
                 : isDark
                     ? AppColors.textSecondaryDark
                     : AppColors.textSecondaryLight,

@@ -17,40 +17,28 @@ class HomeHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favCount = ref.watch(favoritesProvider).length;
-
-    return Container(
+    return Padding(
       padding: EdgeInsets.fromLTRB(
-        20,
-        MediaQuery.of(context).padding.top + 16,
-        20,
-        12,
-      ),
+          20, MediaQuery.of(context).padding.top + 16, 20, 12),
       child: Row(
         children: [
-          // Logo & greeting
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    // Luxury emblem
                     Container(
-                      width: 32,
-                      height: 32,
+                      width: 30,
+                      height: 30,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          colors: AppColors.goldGradient,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                        color: AppColors.accent,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.gold.withOpacity(0.4),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
+                            color: AppColors.accent.withOpacity(0.35),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -59,9 +47,9 @@ class HomeHeader extends ConsumerWidget {
                           'L',
                           style: TextStyle(
                             fontFamily: 'Urbanist',
-                            color: Color(0xFF0A0A0F),
+                            color: Colors.white,
                             fontWeight: FontWeight.w900,
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                         ),
                       ),
@@ -72,8 +60,8 @@ class HomeHeader extends ConsumerWidget {
                       style: TextStyle(
                         fontFamily: 'Urbanist',
                         fontWeight: FontWeight.w900,
-                        fontSize: 20,
-                        letterSpacing: 3.0,
+                        fontSize: 18,
+                        letterSpacing: 2.5,
                         color: isDark
                             ? AppColors.textPrimaryDark
                             : AppColors.textPrimaryLight,
@@ -81,7 +69,7 @@ class HomeHeader extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   'Discover extraordinary machines',
                   style: AppTextStyles.caption(dark: isDark),
@@ -89,11 +77,8 @@ class HomeHeader extends ConsumerWidget {
               ],
             ),
           ),
-
-          // Actions
           Row(
             children: [
-              // Theme toggle
               _IconBtn(
                 icon: isDark
                     ? Icons.light_mode_rounded
@@ -102,8 +87,6 @@ class HomeHeader extends ConsumerWidget {
                 isDark: isDark,
               ),
               const SizedBox(width: 8),
-
-              // Notifications (cosmetic)
               _IconBtn(
                 icon: Icons.notifications_outlined,
                 onTap: () {},
@@ -138,22 +121,22 @@ class _IconBtn extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isDark ? AppColors.darkCard : Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withOpacity(isDark ? 0.2 : 0.06),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
             child: Icon(
               icon,
-              size: 20,
+              size: 18,
               color: isDark
                   ? AppColors.textSecondaryDark
                   : AppColors.textSecondaryLight,
@@ -164,20 +147,18 @@ class _IconBtn extends StatelessWidget {
               top: 0,
               right: 0,
               child: Container(
-                width: 16,
-                height: 16,
+                width: 14,
+                height: 14,
                 decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.gold,
-                ),
+                    shape: BoxShape.circle, color: AppColors.accent),
                 child: Center(
                   child: Text(
                     '$badge',
                     style: const TextStyle(
                       fontFamily: 'Urbanist',
-                      fontSize: 9,
+                      fontSize: 8,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF0A0A0F),
+                      color: Colors.white,
                     ),
                   ),
                 ),

@@ -27,7 +27,6 @@ class FilterBar extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          // Filter button
           _FilterButton(
             label: 'Filter',
             icon: Icons.tune_rounded,
@@ -36,8 +35,6 @@ class FilterBar extends ConsumerWidget {
             onTap: () => _showFilterSheet(context, ref),
           ),
           const SizedBox(width: 8),
-
-          // Sort button
           _FilterButton(
             label: filter.sortBy.label.split(':').first,
             icon: Icons.sort_rounded,
@@ -45,19 +42,16 @@ class FilterBar extends ConsumerWidget {
             isDark: isDark,
             onTap: () => _showSortSheet(context, ref),
           ),
-
           const Spacer(),
-
-          // Active filters count badge
           if (filter.hasActiveFilters) ...[
             GestureDetector(
               onTap: () => ref.read(filterProvider.notifier).reset(),
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                       color: AppColors.error.withOpacity(0.3), width: 1),
                 ),
@@ -65,8 +59,8 @@ class FilterBar extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.close_rounded,
-                        size: 12, color: AppColors.error),
-                    const SizedBox(width: 4),
+                        size: 11, color: AppColors.error),
+                    const SizedBox(width: 3),
                     Text(
                       'Clear',
                       style: AppTextStyles.caption(dark: isDark).copyWith(
@@ -78,22 +72,20 @@ class FilterBar extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
           ],
-
-          // Grid / List toggle
           GestureDetector(
             onTap: onToggleView,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 40,
-              height: 40,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isDark ? AppColors.darkCard : Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.25 : 0.07),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.06),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -101,7 +93,7 @@ class FilterBar extends ConsumerWidget {
                 isGridView
                     ? Icons.view_list_rounded
                     : Icons.grid_view_rounded,
-                size: 18,
+                size: 17,
                 color: isDark
                     ? AppColors.textSecondaryDark
                     : AppColors.textSecondaryLight,
@@ -153,20 +145,21 @@ class _FilterButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: isActive
-              ? const LinearGradient(colors: AppColors.goldGradient)
-              : null,
-          color: isActive ? null : isDark ? AppColors.darkCard : Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          color: isActive
+              ? AppColors.accent
+              : isDark
+                  ? AppColors.darkCard
+                  : Colors.white,
           boxShadow: [
             BoxShadow(
               color: isActive
-                  ? AppColors.gold.withOpacity(0.3)
-                  : Colors.black.withOpacity(isDark ? 0.2 : 0.06),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
+                  ? AppColors.accent.withOpacity(0.3)
+                  : Colors.black.withOpacity(isDark ? 0.15 : 0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -175,14 +168,14 @@ class _FilterButton extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 15,
+              size: 14,
               color: isActive
-                  ? const Color(0xFF0A0A0F)
+                  ? Colors.white
                   : isDark
                       ? AppColors.textSecondaryDark
                       : AppColors.textSecondaryLight,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 5),
             Text(
               label,
               style: TextStyle(
@@ -190,7 +183,7 @@ class _FilterButton extends StatelessWidget {
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: isActive
-                    ? const Color(0xFF0A0A0F)
+                    ? Colors.white
                     : isDark
                         ? AppColors.textSecondaryDark
                         : AppColors.textSecondaryLight,
@@ -203,47 +196,79 @@ class _FilterButton extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────
-// Sort Bottom Sheet
-// ──────────────────────────────
+// ── Sort Sheet ────────────────────────────────────────────────────────────────
 class _SortSheet extends StatelessWidget {
   final bool isDark;
   final WidgetRef ref;
-
   const _SortSheet({required this.isDark, required this.ref});
 
   @override
   Widget build(BuildContext context) {
     final current = ref.watch(filterProvider).sortBy;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+      padding: EdgeInsets.fromLTRB(
+          20, 8, 20, MediaQuery.of(context).padding.bottom + 24),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle
           Container(
-            width: 40,
+            width: 36,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 20),
+            margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
               color: isDark ? AppColors.textTertiaryDark : Colors.black12,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           Text('Sort By', style: AppTextStyles.h3(dark: isDark)),
-          const SizedBox(height: 16),
-          ...SortOption.values.map((opt) => _SortTile(
-                option: opt,
-                isSelected: opt == current,
-                isDark: isDark,
+          const SizedBox(height: 14),
+          ...SortOption.values.map((opt) => GestureDetector(
                 onTap: () {
                   ref.read(filterProvider.notifier).setSortBy(opt);
                   Navigator.pop(context);
                 },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 13),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: opt == current
+                        ? AppColors.accent.withOpacity(0.1)
+                        : isDark
+                            ? AppColors.darkCard
+                            : AppColors.lightBg,
+                    border: opt == current
+                        ? Border.all(
+                            color: AppColors.accent.withOpacity(0.4),
+                            width: 1.5)
+                        : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          opt.label,
+                          style: AppTextStyles.bodyMedium(dark: isDark)
+                              .copyWith(
+                            color: opt == current ? AppColors.accent : null,
+                            fontWeight: opt == current
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      if (opt == current)
+                        const Icon(Icons.check_circle_rounded,
+                            color: AppColors.accent, size: 18),
+                    ],
+                  ),
+                ),
               )),
         ],
       ),
@@ -251,70 +276,9 @@ class _SortSheet extends StatelessWidget {
   }
 }
 
-class _SortTile extends StatelessWidget {
-  final SortOption option;
-  final bool isSelected;
-  final bool isDark;
-  final VoidCallback onTap;
-
-  const _SortTile({
-    required this.option,
-    required this.isSelected,
-    required this.isDark,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: isSelected
-              ? AppColors.gold.withOpacity(0.12)
-              : isDark
-                  ? AppColors.darkCard
-                  : AppColors.lightBg,
-          border: isSelected
-              ? Border.all(color: AppColors.gold.withOpacity(0.4), width: 1.5)
-              : null,
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                option.label,
-                style: AppTextStyles.bodyMedium(dark: isDark).copyWith(
-                  color: isSelected
-                      ? AppColors.gold
-                      : isDark
-                          ? AppColors.textPrimaryDark
-                          : AppColors.textPrimaryLight,
-                  fontWeight:
-                      isSelected ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ),
-            if (isSelected)
-              const Icon(Icons.check_circle_rounded,
-                  color: AppColors.gold, size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ──────────────────────────────
-// Filter Bottom Sheet
-// ──────────────────────────────
+// ── Filter Sheet ─────────────────────────────────────────────────────────────
 class _FilterSheet extends ConsumerStatefulWidget {
   final WidgetRef ref;
-
   const _FilterSheet({required this.ref});
 
   @override
@@ -329,10 +293,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
   void initState() {
     super.initState();
     final f = ref.read(filterProvider);
-    _priceRange = RangeValues(
-      f.minPrice ?? 0,
-      f.maxPrice ?? _maxPrice,
-    );
+    _priceRange = RangeValues(f.minPrice ?? 0, f.maxPrice ?? _maxPrice);
   }
 
   @override
@@ -348,7 +309,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
           20, 8, 20, MediaQuery.of(context).padding.bottom + 20),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: DraggableScrollableSheet(
         initialChildSize: 1,
@@ -360,16 +321,13 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Handle
               Center(
                 child: Container(
-                  width: 40,
+                  width: 36,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? AppColors.textTertiaryDark
-                        : Colors.black12,
+                    color: isDark ? AppColors.textTertiaryDark : Colors.black12,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -381,31 +339,27 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
                   TextButton(
                     onPressed: () {
                       ref.read(filterProvider.notifier).reset();
-                      setState(() => _priceRange =
-                          const RangeValues(0, _maxPrice));
+                      setState(() =>
+                          _priceRange = const RangeValues(0, _maxPrice));
                     },
-                    child: Text('Reset All',
+                    child: Text('Reset',
                         style: TextStyle(
                             fontFamily: 'Urbanist',
-                            color: AppColors.gold,
+                            color: AppColors.accent,
                             fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // Price Range
+              const SizedBox(height: 16),
               Text('PRICE RANGE',
                   style: AppTextStyles.label(dark: isDark)
-                      .copyWith(color: AppColors.gold)),
+                      .copyWith(color: AppColors.accent, fontSize: 10)),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '\$${_priceRange.start.toInt() ~/ 1000}K',
-                    style: AppTextStyles.bodyMedium(dark: isDark),
-                  ),
+                  Text('\$${_priceRange.start.toInt() ~/ 1000}K',
+                      style: AppTextStyles.bodyMedium(dark: isDark)),
                   Text(
                     _priceRange.end >= _maxPrice
                         ? 'No limit'
@@ -416,13 +370,12 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
               ),
               SliderTheme(
                 data: SliderThemeData(
-                  activeTrackColor: AppColors.gold,
-                  inactiveTrackColor: isDark
-                      ? AppColors.darkCard
-                      : AppColors.lightBg,
-                  thumbColor: AppColors.gold,
-                  overlayColor: AppColors.gold.withOpacity(0.2),
-                  trackHeight: 4,
+                  activeTrackColor: AppColors.accent,
+                  inactiveTrackColor:
+                      isDark ? AppColors.darkCard : AppColors.lightBg,
+                  thumbColor: AppColors.accent,
+                  overlayColor: AppColors.accent.withOpacity(0.15),
+                  trackHeight: 3,
                 ),
                 child: RangeSlider(
                   values: _priceRange,
@@ -431,79 +384,70 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
                   divisions: 100,
                   onChanged: (v) => setState(() => _priceRange = v),
                   onChangeEnd: (v) {
-                    ref.read(filterProvider.notifier).setMinPrice(
-                        v.start > 0 ? v.start : null);
-                    ref.read(filterProvider.notifier).setMaxPrice(
-                        v.end < _maxPrice ? v.end : null);
+                    ref
+                        .read(filterProvider.notifier)
+                        .setMinPrice(v.start > 0 ? v.start : null);
+                    ref
+                        .read(filterProvider.notifier)
+                        .setMaxPrice(v.end < _maxPrice ? v.end : null);
                   },
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Fuel Type
+              const SizedBox(height: 16),
               Text('FUEL TYPE',
                   style: AppTextStyles.label(dark: isDark)
-                      .copyWith(color: AppColors.gold)),
-              const SizedBox(height: 12),
+                      .copyWith(color: AppColors.accent, fontSize: 10)),
+              const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: fuelTypes.map((ft) {
-                  final isSelected = filter.fuelType == ft;
+                  final sel = filter.fuelType == ft;
                   return GestureDetector(
                     onTap: () => ref
                         .read(filterProvider.notifier)
-                        .setFuelType(isSelected ? null : ft),
-                    child: _FilterChip(
-                        label: ft, isSelected: isSelected, isDark: isDark),
+                        .setFuelType(sel ? null : ft),
+                    child: _Chip(label: ft, isSelected: sel, isDark: isDark),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 20),
-
-              // Brand
+              const SizedBox(height: 16),
               Text('BRAND',
                   style: AppTextStyles.label(dark: isDark)
-                      .copyWith(color: AppColors.gold)),
-              const SizedBox(height: 12),
+                      .copyWith(color: AppColors.accent, fontSize: 10)),
+              const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: brands.map((b) {
-                  final isSelected = filter.brand == b;
+                  final sel = filter.brand == b;
                   return GestureDetector(
                     onTap: () => ref
                         .read(filterProvider.notifier)
-                        .setBrand(isSelected ? null : b),
-                    child: _FilterChip(
-                        label: b, isSelected: isSelected, isDark: isDark),
+                        .setBrand(sel ? null : b),
+                    child: _Chip(label: b, isSelected: sel, isDark: isDark),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 20),
-
-              // Category
+              const SizedBox(height: 16),
               Text('CATEGORY',
                   style: AppTextStyles.label(dark: isDark)
-                      .copyWith(color: AppColors.gold)),
-              const SizedBox(height: 12),
+                      .copyWith(color: AppColors.accent, fontSize: 10)),
+              const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: categories.map((c) {
-                  final isSelected = filter.category == c;
+                  final sel = filter.category == c;
                   return GestureDetector(
                     onTap: () => ref
                         .read(filterProvider.notifier)
-                        .setCategory(isSelected ? null : c),
-                    child: _FilterChip(
-                        label: c, isSelected: isSelected, isDark: isDark),
+                        .setCategory(sel ? null : c),
+                    child: _Chip(label: c, isSelected: sel, isDark: isDark),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 32),
-
-              // Apply
+              const SizedBox(height: 28),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -519,35 +463,24 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
   }
 }
 
-class _FilterChip extends StatelessWidget {
+class _Chip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final bool isDark;
-
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    required this.isDark,
-  });
+  const _Chip(
+      {required this.label, required this.isSelected, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      duration: const Duration(milliseconds: 150),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: isSelected ? AppColors.gold.withOpacity(0.15) : null,
-        gradient: isSelected
-            ? null
-            : LinearGradient(
-                colors: isDark
-                    ? [AppColors.darkCard, AppColors.darkCardElevated]
-                    : [Colors.white, const Color(0xFFF8F8FC)],
-              ),
+        borderRadius: BorderRadius.circular(8),
+        color: isSelected ? AppColors.accent.withOpacity(0.12) : null,
         border: Border.all(
           color: isSelected
-              ? AppColors.gold.withOpacity(0.5)
+              ? AppColors.accent.withOpacity(0.5)
               : isDark
                   ? AppColors.darkCardElevated
                   : Colors.black12,
@@ -558,10 +491,10 @@ class _FilterChip extends StatelessWidget {
         label,
         style: TextStyle(
           fontFamily: 'Urbanist',
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           color: isSelected
-              ? AppColors.gold
+              ? AppColors.accent
               : isDark
                   ? AppColors.textSecondaryDark
                   : AppColors.textSecondaryLight,
