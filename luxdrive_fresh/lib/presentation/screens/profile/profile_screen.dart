@@ -4,33 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/providers/car_provider.dart';
+import '../../../data/providers/auth_provider.dart';
+import '../../../data/providers/currency_provider.dart';
+import '../auth/login_screen.dart';
 
 // ── Providers ─────────────────────────────────────────────────────────────────
-final selectedCurrencyProvider = StateProvider<String>((_) => 'USD');
-final selectedLanguageProvider = StateProvider<String>((_) => 'English');
 
-const List<Map<String, String>> kCurrencies = [
-  {'code': 'USD', 'name': 'US Dollar', 'symbol': '\$'},
-  {'code': 'EUR', 'name': 'Euro', 'symbol': '€'},
-  {'code': 'GBP', 'name': 'British Pound', 'symbol': '£'},
-  {'code': 'AED', 'name': 'UAE Dirham', 'symbol': 'د.إ'},
-  {'code': 'INR', 'name': 'Indian Rupee', 'symbol': '₹'},
-  {'code': 'JPY', 'name': 'Japanese Yen', 'symbol': '¥'},
-  {'code': 'CNY', 'name': 'Chinese Yuan', 'symbol': '¥'},
-  {'code': 'SAR', 'name': 'Saudi Riyal', 'symbol': 'ر.س'},
-  {'code': 'CHF', 'name': 'Swiss Franc', 'symbol': 'Fr'},
-  {'code': 'CAD', 'name': 'Canadian Dollar', 'symbol': 'C\$'},
-  {'code': 'AUD', 'name': 'Australian Dollar', 'symbol': 'A\$'},
-  {'code': 'SGD', 'name': 'Singapore Dollar', 'symbol': 'S\$'},
-  {'code': 'KWD', 'name': 'Kuwaiti Dinar', 'symbol': 'د.ك'},
-  {'code': 'QAR', 'name': 'Qatari Riyal', 'symbol': 'ر.ق'},
-  {'code': 'MYR', 'name': 'Malaysian Ringgit', 'symbol': 'RM'},
-  {'code': 'THB', 'name': 'Thai Baht', 'symbol': '฿'},
-  {'code': 'HKD', 'name': 'Hong Kong Dollar', 'symbol': 'HK\$'},
-  {'code': 'NZD', 'name': 'New Zealand Dollar', 'symbol': 'NZ\$'},
-  {'code': 'SEK', 'name': 'Swedish Krona', 'symbol': 'kr'},
-  {'code': 'NOK', 'name': 'Norwegian Krone', 'symbol': 'kr'},
-];
+
 
 const List<Map<String, String>> kLanguages = [
   {'code': 'en', 'name': 'English'},
@@ -62,7 +42,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(isDarkModeProvider);
     final favCount = ref.watch(favoritesProvider).length;
-    final currency = ref.watch(selectedCurrencyProvider);
+    final currency = ref.watch(currencyProvider).code;
     final language = ref.watch(selectedLanguageProvider);
 
     return Scaffold(
@@ -341,7 +321,15 @@ class ProfileScreen extends ConsumerWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await ref.read(authProvider.notifier).signOut();
+                    if (context.mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (_) => false,
+                      );
+                    }
+                  },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
                     side: BorderSide(
@@ -371,7 +359,7 @@ class ProfileScreen extends ConsumerWidget {
   // ── Sheets ────────────────────────────────────────────────────────────────
   void _showCurrencyPicker(
       BuildContext context, WidgetRef ref, bool isDark) {
-    final current = ref.read(selectedCurrencyProvider);
+    final current = ref.read(currencyProvider).code;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -379,16 +367,19 @@ class ProfileScreen extends ConsumerWidget {
       builder: (_) => _PickerSheet(
         title: 'Select Currency',
         isDark: isDark,
-        items: kCurrencies
+        items: kAllCurrencies
             .map((c) => _PickerItem(
-                  value: c['code']!,
-                  label: '${c['name']} (${c['symbol']})',
-                  subtitle: c['code'],
+                  value: c.code,
+                  label: '${c.name} (${c.symbol})',
+                  subtitle: c.code,
                 ))
             .toList(),
         selected: current,
-        onSelect: (v) =>
-            ref.read(selectedCurrencyProvider.notifier).state = v,
+        onSelect: (v) {
+          final found = kAllCurrencies.firstWhere(
+              (c) => c.code == v, orElse: () => kAllCurrencies.first);
+          ref.read(currencyProvider.notifier).setCurrency(found);
+        },
       ),
     );
   }

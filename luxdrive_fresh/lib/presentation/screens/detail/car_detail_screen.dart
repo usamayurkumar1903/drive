@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../data/providers/currency_provider.dart';
 import '../../../data/models/car_model.dart';
 import '../../../data/providers/car_provider.dart';
 
@@ -368,7 +369,7 @@ class _DetailContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    Formatters.formatPriceFull(car.price),
+                    ref.watch(currencyProvider.notifier).formatPrice(car.price),
                     style: AppTextStyles.price(dark: isDark).copyWith(fontSize: 22),
                   ),
                   Text(
@@ -997,7 +998,7 @@ class _PurchaseSheet extends StatelessWidget {
           const SizedBox(height: 20),
           _PriceLine(
               label: 'Vehicle Price',
-              value: Formatters.formatPriceFull(car.price),
+              value: ref.watch(currencyProvider.notifier).formatPrice(car.price),
               isDark: isDark),
           _PriceLine(
               label: 'Documentation',
@@ -1015,7 +1016,7 @@ class _PurchaseSheet extends StatelessWidget {
           const SizedBox(height: 8),
           _PriceLine(
             label: 'Total',
-            value: Formatters.formatPriceFull(car.price + 1500),
+            value: ref.watch(currencyProvider.notifier).formatPrice(car.price + 1500),
             isDark: isDark,
             isBold: true,
             valueColor: AppColors.accent,

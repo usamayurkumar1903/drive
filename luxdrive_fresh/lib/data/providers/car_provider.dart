@@ -206,3 +206,8 @@ final isDarkModeProvider = StateProvider<bool>((_) => true);
 // Nav index
 // ──────────────────────────────
 final navIndexProvider = StateProvider<int>((_) => 0);
+
+// ──────────────────────────────
+// Language
+// ──────────────────────────────
+final selectedLanguageProvider = StateProvider<String>((_) => 'English');

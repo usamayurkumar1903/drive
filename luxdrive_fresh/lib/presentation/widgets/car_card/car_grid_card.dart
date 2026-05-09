@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../data/providers/currency_provider.dart';
 import '../../../data/models/car_model.dart';
 import '../../../data/providers/car_provider.dart';
 
@@ -183,7 +184,7 @@ class _CarGridCardState extends ConsumerState<CarGridCard>
                           children: [
                             Expanded(
                               child: Text(
-                                Formatters.formatPrice(widget.car.price),
+                                ref.watch(currencyProvider.notifier).formatPrice(widget.car.price),
                                 style: AppTextStyles.bodyMedium(dark: isDark)
                                     .copyWith(
                                   fontSize: 14,
@@ -357,7 +358,7 @@ class _CarListCardState extends ConsumerState<CarListCard>
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          Formatters.formatPrice(widget.car.price),
+                          ref.watch(currencyProvider.notifier).formatPrice(widget.car.price),
                           style: AppTextStyles.bodyMedium(dark: isDark)
                               .copyWith(
                                   fontSize: 15, fontWeight: FontWeight.w800),
@@ -472,7 +473,7 @@ class FeaturedCarCard extends ConsumerWidget {
                       Row(
                         children: [
                           Text(
-                            Formatters.formatPrice(car.price),
+                            ref.watch(currencyProvider.notifier).formatPrice(car.price),
                             style: const TextStyle(
                               fontFamily: 'Urbanist',
                               color: Colors.white,

@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
+import '../../data/providers/auth_provider.dart';
 import '../../data/providers/car_provider.dart';
+import 'auth/login_screen.dart';
 import 'main_shell.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -23,29 +25,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
+        duration: const Duration(milliseconds: 700), vsync: this);
     _fadeAnim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _scaleAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _scaleAnim = Tween<double>(begin: 0.88, end: 1.0).animate(
+        CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     _ctrl.forward();
     _navigate();
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1400));
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const MainShell(),
-          transitionsBuilder: (_, anim, __, child) =>
-              FadeTransition(opacity: anim, child: child),
-          transitionDuration: const Duration(milliseconds: 400),
-        ),
-      );
-    }
+    await Future.delayed(const Duration(milliseconds: 1600));
+    if (!mounted) return;
+    final auth = ref.read(authProvider);
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => auth.status == AuthStatus.authenticated
+            ? const MainShell()
+            : const LoginScreen(),
+        transitionsBuilder: (_, anim, __, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
+    );
   }
 
   @override
@@ -68,38 +69,35 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.accent,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.accent.withOpacity(0.35),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
+                        blurRadius: 28,
+                        offset: const Offset(0, 10),
                       ),
                     ],
                   ),
                   child: const Center(
-                    child: Text(
-                      'L',
-                      style: TextStyle(
-                        fontFamily: 'Urbanist',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 36,
-                      ),
-                    ),
+                    child: Text('L',
+                        style: TextStyle(
+                            fontFamily: 'Urbanist',
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 40)),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 22),
                 Text(
                   'LUXDRIVE',
                   style: TextStyle(
                     fontFamily: 'Urbanist',
                     fontWeight: FontWeight.w900,
-                    fontSize: 24,
+                    fontSize: 26,
                     letterSpacing: 4.0,
                     color: isDark
                         ? AppColors.textPrimaryDark
@@ -112,10 +110,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   style: TextStyle(
                     fontFamily: 'Urbanist',
                     fontSize: 13,
+                    letterSpacing: 0.5,
                     color: isDark
                         ? AppColors.textTertiaryDark
                         : AppColors.textTertiaryLight,
-                    letterSpacing: 0.5,
                   ),
                 ),
               ],

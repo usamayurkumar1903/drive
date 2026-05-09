@@ -22,13 +22,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isGridView = true;
-  final _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,26 +30,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isSearchActive = ref.watch(isSearchActiveProvider);
 
     return Scaffold(
-      backgroundColor:
-          isDark ? AppColors.darkBg : AppColors.lightBg,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         slivers: [
-          // ── App Bar ──────────────────────────
           SliverToBoxAdapter(
             child: HomeHeader(
-              onThemeToggle: () => ref
-                  .read(isDarkModeProvider.notifier)
-                  .state = !isDark,
+              onThemeToggle: () =>
+                  ref.read(isDarkModeProvider.notifier).state = !isDark,
               isDark: isDark,
             ),
           ),
-
-          // ── Search Bar ──────────────────────
           const SliverToBoxAdapter(child: SearchBarWidget()),
-
-          // ── Featured Section ─────────────────
           if (!isSearchActive) ...[
             SliverToBoxAdapter(
               child: _SectionHeader(
@@ -66,52 +53,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             const SliverToBoxAdapter(child: FeaturedSection()),
-
-            // ── Brand Filter ──────────────────
             SliverToBoxAdapter(
               child: _SectionHeader(
                 title: 'Browse',
                 subtitle: 'By brand',
                 isDark: isDark,
-                showBrandFilter: true,
               ),
             ),
             const SliverToBoxAdapter(child: BrandFilterRow()),
           ],
-
-          // ── Filter & Sort Bar ─────────────────
           SliverPersistentHeader(
             pinned: true,
             delegate: _FilterBarDelegate(
               child: FilterBar(
                 isGridView: _isGridView,
-                onToggleView: () => setState(() => _isGridView = !_isGridView),
+                onToggleView: () =>
+                    setState(() => _isGridView = !_isGridView),
                 isDark: isDark,
               ),
             ),
           ),
-
-          // ── Results Count ─────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
               child: Text(
                 '${filteredCars.length} vehicles found',
                 style: AppTextStyles.caption(dark: isDark),
               ),
             ),
           ),
-
-          // ── Car Grid / List ───────────────────
           if (filteredCars.isEmpty)
-            SliverFillRemaining(
-              child: _EmptyState(isDark: isDark),
-            )
+            SliverFillRemaining(child: _EmptyState(isDark: isDark))
           else if (_isGridView)
             _GridView(cars: filteredCars)
           else
             _ListView(cars: filteredCars),
-
           const SliverToBoxAdapter(child: SizedBox(height: 120)),
         ],
       ),
@@ -119,12 +95,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-// ──────────────────────────────
-// Grid View Sliver
-// ──────────────────────────────
 class _GridView extends StatelessWidget {
   final List cars;
-
   const _GridView({required this.cars});
 
   @override
@@ -137,18 +109,25 @@ class _GridView extends StatelessWidget {
             final car = cars[index];
             return AnimationConfiguration.staggeredGrid(
               position: index,
-              duration: const Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 350),
               columnCount: 2,
               child: ScaleAnimation(
-                scale: 0.92,
+                scale: 0.94,
                 child: FadeInAnimation(
-                  child: CarGridCard(
-                    car: car,
-                    index: index,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CarDetailScreen(car: car),
+                  child: RepaintBoundary(
+                    child: CarGridCard(
+                      car: car,
+                      index: index,
+                      onTap: () => Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) =>
+                              CarDetailScreen(car: car),
+                          transitionsBuilder: (_, anim, __, child) =>
+                              FadeTransition(opacity: anim, child: child),
+                          transitionDuration:
+                              const Duration(milliseconds: 300),
+                        ),
                       ),
                     ),
                   ),
@@ -160,8 +139,8 @@ class _GridView extends StatelessWidget {
         ),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
           childAspectRatio: 0.72,
         ),
       ),
@@ -169,12 +148,8 @@ class _GridView extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────
-// List View Sliver
-// ──────────────────────────────
 class _ListView extends StatelessWidget {
   final List cars;
-
   const _ListView({required this.cars});
 
   @override
@@ -185,16 +160,23 @@ class _ListView extends StatelessWidget {
           final car = cars[index];
           return AnimationConfiguration.staggeredList(
             position: index,
-            duration: const Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 300),
             child: SlideAnimation(
-              verticalOffset: 30,
+              verticalOffset: 20,
               child: FadeInAnimation(
-                child: CarListCard(
-                  car: car,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CarDetailScreen(car: car),
+                child: RepaintBoundary(
+                  child: CarListCard(
+                    car: car,
+                    onTap: () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) =>
+                            CarDetailScreen(car: car),
+                        transitionsBuilder: (_, anim, __, child) =>
+                            FadeTransition(opacity: anim, child: child),
+                        transitionDuration:
+                            const Duration(milliseconds: 300),
+                      ),
                     ),
                   ),
                 ),
@@ -208,34 +190,23 @@ class _ListView extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────
-// Section Header
-// ──────────────────────────────
 class _SectionHeader extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool isDark;
-  final bool showBrandFilter;
-
-  const _SectionHeader({
-    required this.title,
-    required this.subtitle,
-    required this.isDark,
-    this.showBrandFilter = false,
-  });
+  const _SectionHeader(
+      {required this.title, required this.subtitle, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            subtitle.toUpperCase(),
-            style: AppTextStyles.label(dark: isDark)
-                .copyWith(color: AppColors.accent, fontSize: 10),
-          ),
+          Text(subtitle.toUpperCase(),
+              style: AppTextStyles.label(dark: isDark)
+                  .copyWith(color: AppColors.accent, fontSize: 10)),
           const SizedBox(height: 4),
           Text(title, style: AppTextStyles.h2(dark: isDark)),
         ],
@@ -244,12 +215,8 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────
-// Empty State
-// ──────────────────────────────
 class _EmptyState extends StatelessWidget {
   final bool isDark;
-
   const _EmptyState({required this.isDark});
 
   @override
@@ -258,36 +225,24 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.search_off_rounded,
-            size: 72,
-            color: isDark
-                ? AppColors.textTertiaryDark
-                : AppColors.textSecondaryLight.withOpacity(0.4),
-          ),
+          Icon(Icons.search_off_rounded,
+              size: 64,
+              color: isDark
+                  ? AppColors.textTertiaryDark
+                  : AppColors.textTertiaryLight),
           const SizedBox(height: 16),
-          Text(
-            'No vehicles found',
-            style: AppTextStyles.h3(dark: isDark),
-          ),
+          Text('No vehicles found', style: AppTextStyles.h3(dark: isDark)),
           const SizedBox(height: 8),
-          Text(
-            'Try adjusting your filters or search query',
-            style: AppTextStyles.body(dark: isDark),
-            textAlign: TextAlign.center,
-          ),
+          Text('Try adjusting your filters',
+              style: AppTextStyles.body(dark: isDark)),
         ],
       ),
     );
   }
 }
 
-// ──────────────────────────────
-// Pinned filter bar delegate
-// ──────────────────────────────
 class _FilterBarDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
-
   _FilterBarDelegate({required this.child});
 
   @override
@@ -302,5 +257,5 @@ class _FilterBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(_FilterBarDelegate oldDelegate) => true;
+  bool shouldRebuild(_FilterBarDelegate old) => true;
 }
