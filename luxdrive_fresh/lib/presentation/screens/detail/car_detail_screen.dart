@@ -294,14 +294,14 @@ class _CarImage extends StatelessWidget {
 // ──────────────────────────────
 // Detail Content
 // ──────────────────────────────
-class _DetailContent extends StatelessWidget {
+class _DetailContent extends ConsumerWidget {
   final CarModel car;
   final bool isDark;
 
   const _DetailContent({required this.car, required this.isDark});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
       child: Column(
@@ -960,14 +960,14 @@ class _BookingSheet extends StatelessWidget {
 // ──────────────────────────────
 // Purchase Sheet
 // ──────────────────────────────
-class _PurchaseSheet extends StatelessWidget {
+class _PurchaseSheet extends ConsumerWidget {
   final CarModel car;
   final bool isDark;
 
   const _PurchaseSheet({required this.car, required this.isDark});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: EdgeInsets.fromLTRB(
           24, 8, 24, MediaQuery.of(context).padding.bottom + 24),
